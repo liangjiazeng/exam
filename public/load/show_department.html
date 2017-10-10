@@ -3,7 +3,7 @@
                 	<div class="c_editview">
                    <div class="c_condition">
                        <span><select><option>题干</option></select></span>
-                       <span class="pl5 " ><input type="text"></span>
+                       <span class="pl5 " ><input type="text" placeholder="输入关键字"></span>
                        <span class="pl15 pr15 btn_gray ">查找</span>
                        <span class="icon_lead-in"><em class="icon_r">批量导入题目</em></span>
                        <span class="icon_add"><em class="icon_r">单个添加题目</em></span>
@@ -249,6 +249,7 @@
 	//封装展示题目的方法
     	function show_Subject(data){
     		data.forEach(function(item,index){
+
      			var newDiv = $('<div class="Catalog_subject">'
                         +'<div class="Catalogtitwo">题号：'+item.id+';题型：'+item.subjectType_id+'难度：'+item.subjectLevel_id+';上传人：'+item.user_id+';来源：'+item.department_id+';上传时间:'+item.uploadTime+'组卷次数：<em>'+item.id+'</em></div>'
                         +'<div class="Catalogcontent" id='+item.id+'>'
@@ -274,8 +275,12 @@
 						subject_id:item.id
 					},
 					success:function(choise){
-					 	choise.forEach(function(item1){
-					 		
+						if(item.subjectType_id==3){
+							$('.Catalog_subject .Catalogcontentup_choise[id='+item.id+']').empty();
+				 			var newDiv = $('<div><textarea rows="5" cols="100" name="answer" placeholder="输入您的答案"></textarea></div>');
+				 			$('.Catalog_subject .Catalogcontentup_choise[id='+item.id+']').append(newDiv);	
+						}
+					 	choise.forEach(function(item1){			
 					 			if(item.subjectType_id==1){
 					 				var newDiv = $('<div><input type="radio" name="answer" id="'+item1.id+'">'+item1.content+'</div>');
 					 				$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
@@ -283,11 +288,11 @@
 					 				var newDiv = $('<div><input type="checkbox" name="answer" id="'+item1.id+'">'+item1.content+'</div>');
 					 				$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
 					 			}
-					 			// }else if(item.subjectType_id==3){
-					 			// 	$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').empty();
-					 			// 	ar newDiv = $('<div><input type="textarea" name="answer""></div>');
-					 			// 	$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-					 			// }
+					 			else if(item.subjectType_id==3){
+					 				$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').empty();
+						 			var newDiv = $('<div><textarea rows="3" cols="20" name="answer"></textarea></div>');
+						 			$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);	
+					 			}
 				 			
 					 	});
 					}
