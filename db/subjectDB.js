@@ -3,18 +3,14 @@ require('babel-polyfill');
 module.exports = {
     //通过关键字查询
     query(keys){
-      var sql = "select * from tbl_exam_subject where id like '%"
-        +keys+"%' or analysis like '%"
-        +keys+"%' or answer like '%"
-        +keys+"%' or checkState like '%"
-        +keys+"%' or stem like '%"
-        +keys+"%' or uploadTime like '%"
-        +keys+"%' or department_id like '%"
-        +keys+"%' or subjectLevel_id like '%"
-        +keys+"%' or subjectType_id like '%"
-        +keys+"%' or topic_id like '%"
-        +keys+"%' or user_id like '%"
-        +keys+"%'" ;
+      var sql = "select s.* from tbl_exam_subject as s where s.id like '%"
+        +keys+"%' or s.department_id=(select id from tbl_exam_epartment where name like '%"
+        +keys+"%') or s.subjectLevel_id=(select id from tbl_exam_subjectlevel where name like '%"
+        +keys+"%') or s.subjectType_id=(select id from tbl_exam_subjecttype where name like '%"
+        +keys+"%') or s.topic_id=(select id from tbl_exam_topic where title like '%"
+        +keys+"%') or s.user_id=(select id from tbl_exam_user where name like '%"
+        +keys+"%')";
+        console.log(sql)
       return pool.execute(sql);
     },
     //通过id查询

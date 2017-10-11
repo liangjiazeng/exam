@@ -130,4 +130,14 @@ route.post('/manager/delete_SubjectById',(req,resp)=>{
 		console.log(error);
 	});
 });
+//exam/manager/getSubjectByKey
+route.post('/manager/getSubjectByKey',(req,resp)=>{
+	var keys =req.body.keys;
+	console.log(keys);
+	subjectDB.query(keys).then((data)=>{
+		resp.send(data);
+	}).catch((error)=>{
+		console.log(error);
+	});
+});
 module.exports = route;

@@ -4,7 +4,7 @@
                    <div class="c_condition">
                        <span><select><option>题干</option></select></span>
                        <span class="pl5 " ><input type="text" placeholder="输入关键字"></span>
-                       <span class="pl15 pr15 btn_gray ">查找</span>
+                       <span class="pl15 pr15 btn_gray" id="select">查找</span>
                        <span class="icon_lead-in"><em class="icon_r">批量导入题目</em></span>
                        <span class="icon_add"><em class="icon_r">单个添加题目</em></span>
                     </div>
@@ -63,7 +63,7 @@
 
    <script type="text/javascript">
 	 $(function(){
-		 //获取类型数据
+	//获取类型数据
 		$.getJSON("/exam/manager/getAllSubjectType",function(data){
 				var newTr =$('<tr id="Type">'
                                 +'<td align="center">类型</td>'
@@ -84,7 +84,7 @@
 					$('tr#Type .chose').append(new_a);
 				});
 		      });	
-		//获取level数据
+	//获取level数据
 		$.getJSON("/exam/manager/getAllSubjectLevel",function(data){
 			var newTr =$('<tr id="Level">'
                                 +'<td align="center">难易程度</td>'
@@ -104,7 +104,7 @@
 					$('tr#Level .chose').append(new_a);
 				});
 			});	
-		//获取方向数据	
+	//获取方向数据	
 		$.getJSON("/exam/manager/getAllDepartmentes",function(data){
 			var newTr =$('<tr id="Departmentes">'
                                 +'<td align="center">方向</td>'
@@ -125,7 +125,7 @@
 					$('tr#Departmentes .chose').append(new_a);
 				});
 			});				
-		//获取知识点数据
+	//获取知识点数据
 		$.getJSON("/exam/manager/getAllTopics",function(data){
 			var newTr =$('<tr id="Topics">'
                                 +'<td align="center">知识点</td>'
@@ -146,12 +146,12 @@
 					$('tr#Topics .chose').append(new_a);
 				});
 			});	
-     	//查询所有题目
+    //查询所有题目
      	$.getJSON('/exam/manager/getAllSubject',function(data){	
 	     	show_Subject(data);
      	  });
 
-     	//点击a标签就变绿
+     //点击a标签就变绿
     	$('tbody').on('click',function(event){
     		var target = event.target;
     		var father = target.parentNode;
@@ -161,9 +161,31 @@
     		});
     		target.setAttribute("class","active3");  	
     	});
-
-
-    	//根据所选中的类型 难度 方向 知识点区查询题目	
+    //单击相应的题  会显示对应题的答案
+    	$(this).on('click','div[class=Catalogcontentup]',function(event){
+    		var hidden = $(this).parent().children().eq(2).attr('hidden');
+    		if(hidden=='hidden'){
+    			$(this).parent().children().eq(2).removeAttr('hidden');
+    		}else{
+    			$(this).parent().children().eq(2).attr('hidden','hidden');
+    		}	
+    	})
+    //通过关键字查找题目
+    	$(this).on('click',"span[id=select]",function(){
+    		var keys = $(this).prev().children().eq(0).val();
+    		$.ajax("exam/manager/getSubjectByKey",{
+					method:"POST",
+					data:{
+						keys:keys
+					},
+					success:function(data){
+						console.log(data);
+					 	$(".Catalog_subject_all").empty();
+					 	show_Subject(data);
+					}
+				});
+    	});
+    //根据所选中的类型 难度 方向 知识点区查询题目	
     	$('tbody').on('click',function(){
     		var department_id =+$('tbody tr[id=Departmentes] a[class=active3]').attr("id");
     		var subjectLevel_id =+$('tbody tr[id=Level] a[class=active3]').attr("id");
@@ -186,7 +208,7 @@
     	});
 
 
-    	//打钩显示答案和解析
+    //打钩显示答案和解析
     	$('input:checkbox').on('click',function(event){
    
     		var checked = event.target.checked;
@@ -197,12 +219,11 @@
     		}
     	});
 
-    	//点击审查通过与否,点击删除与否
+    //点击审查通过与否,点击删除与否
     	$(this).on('click',"a",function(){
     		var class_name = $(this).attr('class');
     		var text = $(this).text();
-    		console.log(text);
-    		//审查通过
+    	//审查通过
     		if(class_name=='pass'){
     			var ss = +$(this).parent().parent().attr('id');
     			$.ajax("exam/manager/update_Subject_CheckStatue",{
@@ -215,7 +236,11 @@
 					 	console.log('审核成功');
 					}
 				});
-			//审查不通过
+		//下面按钮就会隐藏 只会剩下"加入试卷"
+				$(this).parent().children().hide();
+				$(this).parent().children().eq(1).show();
+	
+		//审查不通过
     		}else if(class_name=='no_pass'){
     			var ss = +$(this).parent().parent().attr('id');
     			$.ajax("exam/manager/update_Subject_CheckStatue",{
@@ -228,7 +253,11 @@
 					 	console.log('审核不通过');
 					}
 				});
-			//删除题目
+			//下面按钮就会隐藏 还会由有"删除题目" "审查通过"
+				$(this).parent().children().hide();
+				$(this).parent().children().eq(0).show();
+				$(this).parent().children().eq(3).show();
+		//删除题目
     		}else if(class_name=='delete_paper'){
     			var ss = +$(this).parent().parent().attr('id');
     			$.ajax("exam/manager/delete_SubjectById",{
@@ -242,32 +271,17 @@
 				});
     		}
     	});
-    	
-    	
-   
 	});
-	//封装展示题目的方法
+//封装展示题目的方法
     	function show_Subject(data){
     		data.forEach(function(item,index){
-
-     			var newDiv = $('<div class="Catalog_subject">'
-                        +'<div class="Catalogtitwo">题号：'+item.id+';题型：'+item.subjectType_id+'难度：'+item.subjectLevel_id+';上传人：'+item.user_id+';来源：'+item.department_id+';上传时间:'+item.uploadTime+'组卷次数：<em>'+item.id+'</em></div>'
-                        +'<div class="Catalogcontent" id='+item.id+'>'
-                            +'<div class="Catalogcontentup">'+item.stem+'</div>' 
-                            +'<div class="Catalogcontentup_choise" id="'+item.id+'"></div>' 
-                             +'<div class="answer" hidden="hidden">'
-                            	+'<div>答案:'+item.answer+'</div>'
-                            	+'<div>解析:'+item.analysis+'</div>'
-                            +'</div>'            
-                            +'<div class="Catalogcontentdown">'
-                            +'<a href="#" class="pass">审核通过</a>'
-                            +'<a href="#" class="add_paper">加入试卷</a>'
-                            +'<a href="#" class="no_pass">审核不通过</a>'
-                            +'<a href="#" class="delete_paper">删除题目</a>'
-                            +'</div>'
-                        +'</div>'
-                   +'</div>');
-     			$(".Catalog_subject_all").append(newDiv);
+    			 if(item.checkState=="未审核"){
+     				show_botton_nocheck(item);
+    			 }else if(item.checkState=="审核通过"){
+    			 	show_botton_pass(item);
+    			 }else{
+    			 	show_botton_nopass(item);
+    			 }
      			//显示选项
      			$.ajax("exam/manager/getChoiseBySubject_id",{
 					method:"POST",
@@ -275,30 +289,149 @@
 						subject_id:item.id
 					},
 					success:function(choise){
-						if(item.subjectType_id==3){
-							$('.Catalog_subject .Catalogcontentup_choise[id='+item.id+']').empty();
-				 			var newDiv = $('<div><textarea rows="5" cols="100" name="answer" placeholder="输入您的答案"></textarea></div>');
-				 			$('.Catalog_subject .Catalogcontentup_choise[id='+item.id+']').append(newDiv);	
-						}
-					 	choise.forEach(function(item1){			
-					 			if(item.subjectType_id==1){
-					 				var newDiv = $('<div><input type="radio" name="answer" id="'+item1.id+'">'+item1.content+'</div>');
-					 				$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-					 			}else if(item.subjectType_id==2){
-					 				var newDiv = $('<div><input type="checkbox" name="answer" id="'+item1.id+'">'+item1.content+'</div>');
-					 				$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-					 			}
-					 			else if(item.subjectType_id==3){
-					 				$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').empty();
-						 			var newDiv = $('<div><textarea rows="3" cols="20" name="answer"></textarea></div>');
-						 			$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);	
-					 			}
-				 			
-					 	});
+						// //如果是简答题   那么就给它一个文本框
+						// if(item.subjectType_id==3){
+						// 	$('.Catalog_subject .Catalogcontentup_choise[id='+item.id+']').empty();
+				 	// 		var newDiv = $('<div><textarea rows="5" cols="100" name="answer" placeholder="输入您的答案"></textarea></div>');
+				 	// 		$('.Catalog_subject .Catalogcontentup_choise[id='+item.id+']').append(newDiv);	
+						// }
+					 	show_choise(item,choise);
 					}
 				});
 			 });
     	} 	
-
-
+//展示选项的方法
+		function show_choise(item,choise){
+			choise.forEach(function(item1,index1){	
+			 			//如果是单选题  那么就给他单选框		
+			 			if(item.subjectType_id==1){
+			 				if(index1==0){
+			 					if(item1.correct.data[0]==1){
+			 						var newDiv = $('<div class="correct"><input type="radio" name="answer" id="'+item1.id+'">A.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}else{
+			 						var newDiv = $('<div><input type="radio" name="answer" id="'+item1.id+'">A.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}
+			 				}else if(index1==1){
+			 					if(item1.correct.data[0]==1){
+			 						var newDiv = $('<div class="correct"><input type="radio" name="answer" id="'+item1.id+'">B.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}else{
+			 						var newDiv = $('<div><input type="radio" name="answer" id="'+item1.id+'">B.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}
+			 				}else if(index1==2){
+			 					if(item1.correct.data[0]==1){
+			 						var newDiv = $('<div class="correct"><input type="radio" name="answer" id="'+item1.id+'">C.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}else{
+			 						var newDiv = $('<div><input type="radio" name="answer" id="'+item1.id+'">C.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}
+			 				}else if(index1==3){
+			 					if(item1.correct.data[0]==1){
+			 						var newDiv = $('<div class="correct"><input type="radio" name="answer" id="'+item1.id+'">D.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}else{
+			 						var newDiv = $('<div><input type="radio" name="answer" id="'+item1.id+'">D.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}
+			 				}
+			 			//如果是复选框   那么就给他一个复选框
+			 			}else if(item.subjectType_id==2){
+			 				if(index1==0){
+			 					if(item1.correct.data[0]==1){
+			 						var newDiv = $('<div class="correct"><input type="checkbox" name="answer" id="'+item1.id+'">A.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}else{
+			 						var newDiv = $('<div><input type="checkbox" name="answer" id="'+item1.id+'">A.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}
+			 				}else if(index1==1){
+			 					if(item1.correct.data[0]==1){
+			 						var newDiv = $('<div class="correct"><input type="checkbox" name="answer" id="'+item1.id+'">B.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}else{
+			 						var newDiv = $('<div><input type="checkbox" name="answer" id="'+item1.id+'">B.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}
+			 				}else if(index1==2){
+			 					if(item1.correct.data[0]==1){
+			 						var newDiv = $('<div class="correct"><input type="checkbox" name="answer" id="'+item1.id+'">C.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}else{
+			 						var newDiv = $('<div><input type="checkbox" name="answer" id="'+item1.id+'">C.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}
+			 				}else if(index1==3){
+			 					if(item1.correct.data[0]==1){
+			 						var newDiv = $('<div class="correct"><input type="checkbox" name="answer" id="'+item1.id+'">D.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}else{
+			 						var newDiv = $('<div><input type="checkbox" name="answer" id="'+item1.id+'">D.'+item1.content+'</div>');
+			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+			 					}
+			 				}
+			 			}				 			
+			 	});
+		}
+//显示下面按钮的方法  -----未审核
+		function show_botton_nocheck(item){
+			var newDiv = $('<div class="Catalog_subject">'
+		            +'<div class="Catalogtitwo">题号：'+item.id+';题型：'+item.subjectType_id+'难度：'+item.subjectLevel_id+';上传人：'+item.user_id+';来源：'+item.department_id+';上传时间:'+item.uploadTime+'组卷次数：<em>'+item.id+'</em></div>'
+		            +'<div class="Catalogcontent" id='+item.id+'>'
+		                +'<div class="Catalogcontentup">'+item.stem+'</div>' 
+		                +'<div class="Catalogcontentup_choise" id="'+item.id+'"></div>' 
+		                 +'<div class="answer" hidden="hidden">'
+		                	+'<div>答案:'+item.answer+'</div>'
+		                	+'<div>解析:'+item.analysis+'</div>'
+		                +'</div>'            
+		                +'<div class="Catalogcontentdown">'
+		                +'<a href="#" class="pass">审核通过</a>'
+		                +'<a href="#" class="add_paper">加入试卷</a>'
+		                +'<a href="#" class="no_pass">审核不通过</a>'
+		                +'<a href="#" class="delete_paper">删除题目</a>'
+		                +'</div>'
+		            +'</div>'
+		       +'</div>');
+				$(".Catalog_subject_all").append(newDiv);
+		}
+//显示下面按钮的方法  -----已经审核
+		function show_botton_pass(item){
+			var newDiv = $('<div class="Catalog_subject">'
+		            +'<div class="Catalogtitwo">题号：'+item.id+';题型：'+item.subjectType_id+'难度：'+item.subjectLevel_id+';上传人：'+item.user_id+';来源：'+item.department_id+';上传时间:'+item.uploadTime+'组卷次数：<em>'+item.id+'</em></div>'
+		            +'<div class="Catalogcontent" id='+item.id+'>'
+		                +'<div class="Catalogcontentup">'+item.stem+'</div>' 
+		                +'<div class="Catalogcontentup_choise" id="'+item.id+'"></div>' 
+		                 +'<div class="answer" hidden="hidden">'
+		                	+'<div>答案:'+item.answer+'</div>'
+		                	+'<div>解析:'+item.analysis+'</div>'
+		                +'</div>'            
+		                +'<div class="Catalogcontentdown">'              
+		                +'<a href="#" class="add_paper">加入试卷</a>'  
+		                +'</div>'
+		            +'</div>'
+		       +'</div>');
+				$(".Catalog_subject_all").append(newDiv);
+		}
+////显示下面按钮的方法  -----审核不通过
+		function show_botton_nopass(item){
+			var newDiv = $('<div class="Catalog_subject">'
+		            +'<div class="Catalogtitwo">题号：'+item.id+';题型：'+item.subjectType_id+'难度：'+item.subjectLevel_id+';上传人：'+item.user_id+';来源：'+item.department_id+';上传时间:'+item.uploadTime+'组卷次数：<em>'+item.id+'</em></div>'
+		            +'<div class="Catalogcontent" id='+item.id+'>'
+		                +'<div class="Catalogcontentup">'+item.stem+'</div>' 
+		                +'<div class="Catalogcontentup_choise" id="'+item.id+'"></div>' 
+		                 +'<div class="answer" hidden="hidden">'
+		                	+'<div>答案:'+item.answer+'</div>'
+		                	+'<div>解析:'+item.analysis+'</div>'
+		                +'</div>'            
+		                +'<div class="Catalogcontentdown">'
+		                +'<a href="#" class="pass">审核通过</a>'
+		                +'<a href="#" class="delete_paper">删除题目</a>'
+		                +'</div>'
+		            +'</div>'
+		       +'</div>');
+				$(".Catalog_subject_all").append(newDiv);
+		}
 </script>   
