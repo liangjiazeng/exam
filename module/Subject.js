@@ -1,6 +1,6 @@
 class Subject{
-	constructor(id,analysis,answer,checkState,stem=null,
-		uploadTime,department_id,subjectLevel_id,subjectType_id,topic_id,user_id){
+	constructor(id=null,analysis=null,answer=null,checkState=null,stem=null,
+		uploadTime=null,department_id=null,subjectLevel_id=null,subjectType_id=null,topic_id=null,user_id=null){
 		this.id=id;
 		this.analysis=analysis;
 		this.answer = answer;

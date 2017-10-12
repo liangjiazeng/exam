@@ -248,6 +248,9 @@
 .Catalog .Catalog_subject_all .answer{color: red}
 .Catalog .Catalog_subject_all .Catalogcontentup_choise .correct{color: red}
 
-
+.Attributecontent_left select{width:100px}
+        textarea,input{font-size:12px;}
+        .Answerpart_right textarea,.Problemcontent textarea{width:90%;height:70%;border:none;padding:10px;}
+        .chapterAnswer{ display:none}
 
 

@@ -26,12 +26,15 @@
 	
 	$(".baseUI li ul li:eq(0)").click(function(){
 		$(".right").load("./load/show_department.html");
+        // $(".right").load('./load/add_Subject.html');
+    
 		})
 	$(".baseUI li ul:eq(0) li:eq(0)").trigger('click');
 
   //点击添加题目
   $(this).on('click','span[class=icon_add]',function(){
         $(".right").load('./load/add_Subject.html');
+        // $(".right").load('./load/add_Subject.html');
   });
   
 }) 
