@@ -267,6 +267,7 @@
 					},
 					success:function(data){
 					 	console.log('删除成功');
+					 	location.reload();
 					}
 				});
     		}
@@ -305,76 +306,37 @@
 			choise.forEach(function(item1,index1){	
 			 			//如果是单选题  那么就给他单选框		
 			 			if(item.subjectType_id==1){
-			 				if(index1==0){
-			 					if(item1.correct.data[0]==1){
-			 						var newDiv = $('<div class="correct"><input type="radio" name="answer" id="'+item1.id+'">A.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}else{
-			 						var newDiv = $('<div><input type="radio" name="answer" id="'+item1.id+'">A.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}
-			 				}else if(index1==1){
-			 					if(item1.correct.data[0]==1){
-			 						var newDiv = $('<div class="correct"><input type="radio" name="answer" id="'+item1.id+'">B.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}else{
-			 						var newDiv = $('<div><input type="radio" name="answer" id="'+item1.id+'">B.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}
-			 				}else if(index1==2){
-			 					if(item1.correct.data[0]==1){
-			 						var newDiv = $('<div class="correct"><input type="radio" name="answer" id="'+item1.id+'">C.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}else{
-			 						var newDiv = $('<div><input type="radio" name="answer" id="'+item1.id+'">C.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}
-			 				}else if(index1==3){
-			 					if(item1.correct.data[0]==1){
-			 						var newDiv = $('<div class="correct"><input type="radio" name="answer" id="'+item1.id+'">D.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}else{
-			 						var newDiv = $('<div><input type="radio" name="answer" id="'+item1.id+'">D.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}
-			 				}
+			 				show_radio(item1,index1);
 			 			//如果是复选框   那么就给他一个复选框
 			 			}else if(item.subjectType_id==2){
-			 				if(index1==0){
-			 					if(item1.correct.data[0]==1){
-			 						var newDiv = $('<div class="correct"><input type="checkbox" name="answer" id="'+item1.id+'">A.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}else{
-			 						var newDiv = $('<div><input type="checkbox" name="answer" id="'+item1.id+'">A.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}
-			 				}else if(index1==1){
-			 					if(item1.correct.data[0]==1){
-			 						var newDiv = $('<div class="correct"><input type="checkbox" name="answer" id="'+item1.id+'">B.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}else{
-			 						var newDiv = $('<div><input type="checkbox" name="answer" id="'+item1.id+'">B.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}
-			 				}else if(index1==2){
-			 					if(item1.correct.data[0]==1){
-			 						var newDiv = $('<div class="correct"><input type="checkbox" name="answer" id="'+item1.id+'">C.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}else{
-			 						var newDiv = $('<div><input type="checkbox" name="answer" id="'+item1.id+'">C.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}
-			 				}else if(index1==3){
-			 					if(item1.correct.data[0]==1){
-			 						var newDiv = $('<div class="correct"><input type="checkbox" name="answer" id="'+item1.id+'">D.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}else{
-			 						var newDiv = $('<div><input type="checkbox" name="answer" id="'+item1.id+'">D.'+item1.content+'</div>');
-			 						$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
-			 					}
-			 				}
+			 				show_check(item1,index1);
 			 			}				 			
 			 	});
+		}
+	
+	//显示单选
+		function show_radio(item1,index1){
+			var num= index1+65;
+			var result = String.fromCharCode(num);
+			if(item1.correct.data[0]==1){
+				var newDiv = $('<div class="correct"><input type="radio" name="answer" id="'+item1.id+'">'+result+'.'+item1.content+'</div>');
+				$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+				}else{
+					var newDiv = $('<div><input type="radio" name="answer" id="'+item1.id+'">'+result+'.'+item1.content+'</div>');
+					$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+				}
+		}
+	//显示复选
+		function show_check(item1,index1){
+			var num= index1+65;
+			var result = String.fromCharCode(num);
+			if(item1.correct.data[0]==1){
+				var newDiv = $('<div class="correct"><input type="checkbox" name="answer" id="'+item1.id+'">'+result+'.'+item1.content+'</div>');
+				$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+				}else{
+					var newDiv = $('<div><input type="checkbox" name="answer" id="'+item1.id+'">'+result+'.'+item1.content+'</div>');
+					$('.Catalog_subject .Catalogcontentup_choise[id='+item1.subject_id+']').append(newDiv);
+				}
 		}
 //显示下面按钮的方法  -----未审核
 		function show_botton_nocheck(item){

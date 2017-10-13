@@ -256,13 +256,20 @@
 						newDiv.find('p').html(result);
 						// console.log($('.Answercontent .Answerpart_radio'));
 						$('.Answercontent .Answerpart_ckeckbox').append(newDiv);
-					}
-					
-						
+					}			
 				});	
+		  	//点击保存题目并关闭
+				$(this).on('click','span:contains("保存并关闭")',function(){		
+					save_choise("关闭");
+				})
 					
-			//点击保存题目
-					$(this).on('click','span[class=btnL]',function(){
+			//点击保存题目并继续
+					$(this).on('click','span:contains("保存并继续")',function(){
+						save_choise("继续");									
+					})
+	})	
+		//封装保存题目选项的方法
+				function save_choise(sb){
 						var type_id = +$('.Attributecontent_left select:eq(0) option:selected').val();
 						var department_id = +$('.Attributecontent_left select:eq(1) option:selected').val();
 						var level_id = +$('.Attributecontent_left select:eq(2) option:selected').val();
@@ -279,8 +286,8 @@
 							$('.Answercontent .Answerpart_radio .Answerpart_left input:radio').toArray().forEach(function(item,index){
 								choises.push(+item.checked);
 							});
-						//传输数据
-							addSubject(type_id,department_id,level_id,topic_id,stem,analysis,answers,choises);
+						//添加题目之后刷新页面
+							addSubject(type_id,department_id,level_id,topic_id,stem,analysis,answers,choises,sb);
 					//这个是复选题的
 						}else if(type_id==2){
 							var answers = new Array();
@@ -290,11 +297,11 @@
 							});
 							$('.Answercontent .Answerpart_ckeckbox .Answerpart_left input:checkbox').toArray().forEach(function(item,index){
 								choises.push(+item.checked);
-							});
-							console.log("answers",answers);
-							console.log("choises",choises);
-							//传输数据
-							addSubject(type_id,department_id,level_id,topic_id,stem,analysis,answers,choises);
+							});							
+						//添加题目之后刷新页面
+							addSubject(type_id,department_id,level_id,topic_id,stem,analysis,answers,choises,sb);
+							
+
 					//这个是简答题的
 						}else{
 							var answer = $('.Answercontent .Answerpart_jiandati textarea[name=choiceContent]').val();
@@ -309,16 +316,15 @@
 								answers:answer,
 								analysis:analysis
 							},
+							//添加题目之后刷新页面
 							success:function(data){
-											console.log("添加成功");
-										}
+								console.log("添加成功");
+								}
 							});
-						}										
-					})
-	        })	
-
+						}	
+				}
 		//封装添加题目的方法-------单选和复选题的
-				function addSubject(type_id,department_id,level_id,topic_id,stem,analysis,answers,choises){
+				function addSubject(type_id,department_id,level_id,topic_id,stem,analysis,answers,choises,sb){
 					$.ajax("addSubjectRouter/manager/addSubject",{
 							method:"POST",
 							data:{
@@ -332,10 +338,9 @@
 								analysis:analysis
 							},
 							success:function(data){
-									//获取刚刚添加的题目的id
-									$.getJSON("/addSubjectRouter/manager/getSubjectByMax_id",function(data){
-										
-										var subject_id = data[0].id;		
+									//返回来的
+									console.log("添加题目成功之后返回来的东东insertId",data.insertId);
+										var subject_id = data.insertId;		
 										$.ajax("addSubjectRouter/manager/addChoise",{
 										method:"POST",
 										data:{
@@ -344,14 +349,27 @@
 											choises:JSON.stringify(choises)
 											},
 										success:function(data){
-											console.log("添加成功");
+												if(sb=="继续"){
+													console.log("添加成功");
+													$('.c_editview .Problem textarea[name=stem]').val('');
+													$('.Problem .Problemcontent textarea[name=analysis]').val('');
+													$('.Answercontent .Answerpart_radio .Answerpart_right textarea[name=choiceContent]').toArray().forEach(function(item,index){
+																	item.value="";
+													});
+													$('.Answercontent .Answerpart_radio .Answerpart_left input:radio').toArray().forEach(function(item,index){
+																item.value="";
+													});
+												}else if(sb=="关闭"){
+													console.log("添加成功");
+													location.reload();
+												}
+											
 											}
 										});
-									});
+									
 								}
-							});
-										
-				}
+							});									
+		}
 	</script>
 	    
 	    
