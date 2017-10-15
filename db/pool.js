@@ -32,9 +32,9 @@ function execute(sql){
           connection = conn;
           conn.query(sql,function(err,result){
             if(!err){
-              resolve(result)
+              resolve(result);
             }else {
-              reject(err)
+              reject(err);
             }
           });
         }).catch(function(err){

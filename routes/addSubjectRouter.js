@@ -28,7 +28,8 @@ route.post('/manager/addSubject',(req,resp)=>{
 			correct.push(answers[index]);
 		}
 	});
-	var subject=new Subject(id=null,analysis,answer=correct,"未审核",stem,date_now,department_id,level_id,type_id,topic_id,user_id=null);
+	var subject=new Subject(id=null,analysis,answer=correct,
+		"未审核",stem,date_now,department_id,level_id,type_id,topic_id,user_id=null);
 	subjectDB.save(subject).then((data)=>{
 		resp.send(data);
 	}).catch(function(error){
@@ -71,6 +72,7 @@ route.post('/manager/addChoise',(req,resp)=>{
 		choiseDB.save(answers[index],item,subject_id).then((data)=>{
 			resp.send(data);
 		}).catch(function(error){
+			return;
 			console.log(error);
 		});
 	});
