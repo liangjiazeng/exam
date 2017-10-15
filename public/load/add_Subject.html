@@ -353,11 +353,14 @@
 													console.log("添加成功");
 													$('.c_editview .Problem textarea[name=stem]').val('');
 													$('.Problem .Problemcontent textarea[name=analysis]').val('');
-													$('.Answercontent .Answerpart_radio .Answerpart_right textarea[name=choiceContent]').toArray().forEach(function(item,index){
+													$('.Answercontent .Answerpart_right textarea[name=choiceContent]').toArray().forEach(function(item,index){
 																	item.value="";
 													});
-													$('.Answercontent .Answerpart_radio .Answerpart_left input:radio').toArray().forEach(function(item,index){
-																item.value="";
+													$('.Answercontent .Answerpart_left input:radio').toArray().forEach(function(item,index){
+																item.checked=false;
+													});
+													$('.Answercontent  .Answerpart_left input:checkbox').toArray().forEach(function(item,index){
+																item.checked=false;
 													});
 												}else if(sb=="关闭"){
 													console.log("添加成功");

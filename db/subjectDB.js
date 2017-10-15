@@ -55,7 +55,9 @@ module.exports = {
     },
     save(subject){
       var sql = "insert into tbl_exam_subject values(null,'"
-      +subject.analysis+"','"+subject.answer.join()+"','"+subject.checkState+"','"+subject.stem+"','"+subject.uploadTime+"',"+subject.department_id+","
+      +subject.analysis+"','"+subject.answer.join()+"','"
+      +subject.checkState+"','"+subject.stem+"','"
+      +subject.uploadTime+"',"+subject.department_id+","
       +subject.subjectLevel_id+","
       +subject.subjectType_id+","
       +subject.topic_id+","
